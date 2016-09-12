@@ -1,218 +1,235 @@
-describe('Take out food', function () {
+/*global describe, it, expect*/
+'use strict';
 
-  it('should formatItems', () => {
-    const items = [
-      'ITEM0001 X 2',
-      'ITEM0030 X 4'
-    ];
+describe('Take out food', function () {
+  it('should format Iteems', () => {
+    const items = ["ITEM0001 x 1", "ITEM0013 x 2", "ITEM0022 x 1"];
+
+    let formattedItems = formatItems(items);
+
     const expected = [
       {
         id: 'ITEM0001',
+        count: 1
+      },
+      {
+        id: 'ITEM0013',
         count: 2
       },
       {
-        id: 'ITEM0030',
-        count: 4
+        id: 'ITEM0022',
+        count: 1
       }
     ];
 
-    let fotmattedItmes = formatItems(items);
-
-    expect(fotmattedItmes).toEqual(expected);
+    expect(formattedItems).toEqual(expected);
   });
 
   it('should buildDetailedItems', () => {
-    const formatedItems = [
+    const formattedItems = [
       {
         id: 'ITEM0001',
-        count: 4
+        count: 1
       },
       {
-        id: 'ITEM0030',
-        count: 8
-      }
-    ];
-    let allItems = loadAllItems();
-    const expected = [
-      {
-        id: 'ITEM0001',
-        count: 4,
-        name: '黄焖鸡',
-        price: 18.00
+        id: 'ITEM0013',
+        count: 2
       },
       {
-        id: 'ITEM0030',
-        count: 8,
-        name: '冰锋',
-        price: 2.00
+        id: 'ITEM0022',
+        count: 1
       }
     ];
 
-    let detailedItems = buildDetailedIems(formatedItems, allItems);
+    let detailedItems = buildDetailedItems(formattedItems, loadAllItems());
+
+    const expected = [
+      {
+        id: 'ITEM0001',
+        name: '黄焖鸡',
+        count: 1,
+        price: 18
+      },
+      {
+        id: 'ITEM0013',
+        name: '肉夹馍',
+        count: 2,
+        price: 6
+      },
+      {
+        id: 'ITEM0022',
+        name: '凉皮',
+        count: 1,
+        price: 8
+      }
+    ];
 
     expect(detailedItems).toEqual(expected);
   });
 
-  it('should buildPromotedItems', () => {
+  it('should buildPromotedItems', () =>{
     const detailedItems = [
       {
         id: 'ITEM0001',
-        count: 4,
         name: '黄焖鸡',
-        price: 18.00
+        count: 1,
+        price: 18
       },
       {
-        id: 'ITEM0030',
-        count: 8,
-        name: '冰锋',
-        price: 2.00
-      }
-    ];
-    let promotions = loadPromotions();
-    const expected = [
-      {
-        id: 'ITEM0001',
-        count: 4,
-        name: '黄焖鸡',
-        price: 18.00,
-        isHalfPrice: true,
-        totalPrice: 72.00
+        id: 'ITEM0013',
+        name: '肉夹馍',
+        count: 2,
+        price: 6
       },
       {
-        id: 'ITEM0030',
-        count: 8,
-        name: '冰锋',
-        price: 2.00,
-        isHalfPrice: false,
-        totalPrice: 16.00
+        id: 'ITEM0022',
+        name: '凉皮',
+        count: 1,
+        price: 8
       }
     ];
 
-    let promotedItems = buildPromotedItems(detailedItems, promotions);
+    let allPromotions = loadPromotions();
+
+    let promotedItems = buildPromotedItems(detailedItems, allPromotions);
+
+    const expected = [
+      {
+        name: '黄焖鸡',
+        count: 1,
+        isHalfPrice: true,
+        totalPrice: 18
+      },
+      {
+        name: '肉夹馍',
+        count: 2,
+        isHalfPrice: false,
+        totalPrice: 12
+      },
+      {
+        name: '凉皮',
+        count: 1,
+        isHalfPrice: true,
+        totalPrice: 8
+      }
+    ];
 
     expect(promotedItems).toEqual(expected);
   });
 
-  it('should calculateTotalPrices', () => {
+  it('should calculateTotalPrices', ()=>{
     const promotedItems = [
       {
-        id: 'ITEM0001',
-        count: 4,
         name: '黄焖鸡',
-        price: 18.00,
+        count: 1,
         isHalfPrice: true,
-        totalPrice: 72.00
+        totalPrice: 18
       },
       {
-        id: 'ITEM0030',
-        count: 8,
-        name: '冰锋',
-        price: 2.00,
+        name: '肉夹馍',
+        count: 2,
         isHalfPrice: false,
-        totalPrice: 16.00
+        totalPrice: 12
+      },
+      {
+        name: '凉皮',
+        count: 1,
+        isHalfPrice: true,
+        totalPrice: 8
       }
     ];
+
+    let totalPrices = calculateTotalPrices(promotedItems);
+
     const expected = {
-      totalPayPrices: 52,
-      totalSaved: 36,
-      type: '指定菜品半价'
+      type: '指定菜品半价',
+      totalPayPrice: 25,
+      totalSaved: 13
     };
 
-    let total = calculateTotalPrice(promotedItems);
-    expect(total).toEqual(expected);
+    expect(totalPrices).toEqual(expected);
   });
 
-  it('should buildReceipt', () => {
+  it('should buildReceipt', () =>{
     const promotedItems = [
       {
-        id: 'ITEM0001',
-        count: 4,
         name: '黄焖鸡',
-        price: 18.00,
+        count: 1,
         isHalfPrice: true,
-        totalPrice: 72.00
+        totalPrice: 18
       },
       {
-        id: 'ITEM0030',
-        count: 8,
-        name: '冰锋',
-        price: 2.00,
+        name: '肉夹馍',
+        count: 2,
         isHalfPrice: false,
-        totalPrice: 16.00
+        totalPrice: 12
+      },
+      {
+        name: '凉皮',
+        count: 1,
+        isHalfPrice: true,
+        totalPrice: 8
       }
     ];
-    const total = {
-      totalPayPrices: 52,
-      totalSaved: 36,
-      type: '指定菜品半价'
+
+    const totalPrices = {
+      type: '指定菜品半价',
+      totalPayPrice: 25,
+      totalSaved: 13
     };
+
+    let receipt = buildReceipt(promotedItems, totalPrices);
+
     const expected = {
-      items: [
-        {
-          name: '黄焖鸡',
-          count: 4,
-          isHalfPrice: true,
-          price: 72
-        },
-        {
-          name: '冰锋',
-          count: 8,
-          isHalfPrice: false,
-          price: 16
-        }
-      ],
-      totalSaved: 36,
-      totalPrice: 52,
-      promotedType: '指定菜品半价'
+      promotedItems,
+      type: totalPrices.type,
+      totalPayPrice: totalPrices.totalPayPrice,
+      totalSaved: totalPrices.totalSaved
     };
-
-    let receipt = buildReceipt(promotedItems, total);
-    expect(receipt).toEqual(expected);
   });
 
-  it('should generate best charge when best is 指定菜品半价', function () {
-    let inputs = ["ITEM0001 x 1", "ITEM0013 x 2", "ITEM0022 x 1"];
-    // let summary = bestCharge([]).trim();
-    let summary = bestCharge(inputs).trim();
-    let expected = `
-   ============= 订餐明细 =============
-   黄焖鸡 x 1 = 18元
-   肉夹馍 x 2 = 12元
-   凉皮 x 1 = 8元
-   -----------------------------------
-   使用优惠:
-   指定菜品半价(黄焖鸡，凉皮)，省13元
-   -----------------------------------
-   总计：25元
-   ===================================`.trim()
-    expect(summary).toEqual(expected)
-  });
+   it('should generate best charge when best is 指定菜品半价', function () {
+   let inputs = ["ITEM0001 x 1", "ITEM0013 x 2", "ITEM0022 x 1"];
+   let summary = bestCharge(inputs).trim();
+   let expected = `
+============= 订餐明细 =============
+黄焖鸡 x 1 = 18元
+肉夹馍 x 2 = 12元
+凉皮 x 1 = 8元
+-----------------------------------
+使用优惠:
+指定菜品半价(黄焖鸡，凉皮)，省13元
+-----------------------------------
+总计：25元
+===================================`.trim();
+   expect(summary).toEqual(expected)
+   });
 
-  it('should generate best charge when best is 满30减6元', function () {
-    let inputs = ["ITEM0013 x 4", "ITEM0022 x 1"];
-    let summary = bestCharge(inputs).trim();
-    let expected = `
-   ============= 订餐明细 =============
-   肉夹馍 x 4 = 24元
-   凉皮 x 1 = 8元
-   -----------------------------------
-   使用优惠:
-   满30减6元，省6元
-   -----------------------------------
-   总计：26元
-   ===================================`.trim()
-    expect(summary).toEqual(expected)
-  });
+   it('should generate best charge when best is 满30减6元', function () {
+   let inputs = ["ITEM0013 x 4", "ITEM0022 x 1"];
+   let summary = bestCharge(inputs).trim();
+   let expected = `
+============= 订餐明细 =============
+肉夹馍 x 4 = 24元
+凉皮 x 1 = 8元
+-----------------------------------
+使用优惠:
+满30减6元，省6元
+-----------------------------------
+总计：26元
+===================================`.trim();
+   expect(summary).toEqual(expected)
+   });
 
-  it('should generate best charge when no promotion can be used', function () {
-    let inputs = ["ITEM0013 x 4"];
-    let summary = bestCharge(inputs).trim();
-    let expected = `
-   ============= 订餐明细 =============
-   肉夹馍 x 4 = 24元
-   -----------------------------------
-   总计：24元
-   ===================================`.trim()
-    expect(summary).toEqual(expected)
-  });
+   it('should generate best charge when no promotion can be used', function () {
+   let inputs = ["ITEM0013 x 4"];
+   let summary = bestCharge(inputs).trim();
+   let expected = `
+============= 订餐明细 =============
+肉夹馍 x 4 = 24元
+-----------------------------------
+总计：24元
+===================================`.trim();
+   expect(summary).toEqual(expected)
+   });
 });
